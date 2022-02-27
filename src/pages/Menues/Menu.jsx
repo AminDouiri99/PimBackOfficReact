@@ -62,7 +62,7 @@ const Menu = () => {
     setmeal({
       name: onemeal.name,
       price: onemeal.price,
-      discount: onemeal.duration,
+      discount: onemeal.discount,
       duration: onemeal.duration,
       hotMeal: onemeal.hotMeal,
       description: onemeal.description,
@@ -94,7 +94,7 @@ const Menu = () => {
 
   React.useEffect(async () => {
     await axios
-      .get(BaseUrl + "/menu/getbyrestaurant/6212cec87c3cf81fcfae25cf")
+      .get(BaseUrl + "/menu/getbyrestaurant/6218f6174af0250cad788d42")
       .then((response) => {
         setlistCategories(response.data["categories"]);
         setdataReady(true);
@@ -117,7 +117,7 @@ const Menu = () => {
           name: categorietoadd,
         },
         {
-          headers: { restaurantid: "6212cec87c3cf81fcfae25cf" },
+          headers: { restaurantid: "6218f6174af0250cad788d42" },
         }
       )
       .then((res) => {
@@ -153,15 +153,22 @@ const Menu = () => {
                 value={categorietoadd}
                 onChange={(e) => setcategorietoadd(e.target.value)}
               />
-              <button className="button col-2" onClick={addCategorie}>
-                submit
-              </button>
-              <button
-                className="button col-2"
-                onClick={doCloseopenAddCategorie}
-              >
-                cancel
-              </button>
+              <div className="row">
+                <div className="col-3">
+                  {" "}
+                  <button className="button col-12" onClick={addCategorie}>
+                    submit
+                  </button>
+                </div>
+                <div className="col-3">
+                  <button
+                    className="button col-12"
+                    onClick={doCloseopenAddCategorie}
+                  >
+                    cancel
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -198,7 +205,7 @@ const Menu = () => {
                     <p>{meal.name}</p>
                     <h4>Meal description : </h4>
                     <p>{meal.description} </p>
-                    <h4>Meal duration : </h4>
+                    <h4>Meal price : </h4>
                     <p>{meal.price} DT</p>
                     <h4>Meal duration : </h4>
                     <p>{meal.duration} min</p>
