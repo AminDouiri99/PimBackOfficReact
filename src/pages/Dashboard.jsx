@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react'
+import { useHistory } from "react-router-dom";
 
 import { Link } from 'react-router-dom'
 
@@ -163,7 +164,11 @@ const renderOrderBody = (item, index) => (
 )
 
 const Dashboard = () => {
-
+    const history = useHistory();
+    if ( localStorage.getItem("auth") != "true" ) //check condition
+    {
+        history.push("/login");
+    }
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
 
     return (

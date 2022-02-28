@@ -13,9 +13,12 @@ import notifications from '../../assets/JsonData/notification.json'
 import user_image from '../../assets/images/tuat.png'
 
 import user_menu from '../../assets/JsonData/user_menus.json'
+import { useHistory } from "react-router-dom";
 
+const Topnav = () => {
+    
 const curr_user = {
-    display_name: 'Tuat Tran',
+    display_name: localStorage.getItem('firstname') + ' '+ localStorage.getItem('lastname'),
     image: user_image
 }
 
@@ -36,9 +39,17 @@ const renderUserToggle = (user) => (
         </div>
     </div>
 )
+const history = useHistory();
 
+const actionMenu = (item)=>{
+    console.log("aaaaaa")
+    if(item=="Logout"){
+        localStorage.clear()
+        history.push('/login')
+    }
+}
 const renderUserMenu =(item, index) => (
-    <Link to='/' key={index}>
+    <Link  key={index} onClick={()=>actionMenu(item.content)}>
         <div className="notification-item">
             <i className={item.icon}></i>
             <span>{item.content}</span>
@@ -46,7 +57,6 @@ const renderUserMenu =(item, index) => (
     </Link>
 )
 
-const Topnav = () => {
     return (
         <div className='topnav'>
             <div className="topnav__search">

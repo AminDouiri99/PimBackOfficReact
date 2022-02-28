@@ -94,7 +94,7 @@ const Menu = () => {
 
   React.useEffect(async () => {
     await axios
-      .get(BaseUrl + "/menu/getbyrestaurant/6218f6174af0250cad788d42")
+      .get(BaseUrl + "/menu/getbyrestaurant/"+localStorage.getItem("restaurant_id"))
       .then((response) => {
         setlistCategories(response.data["categories"]);
         setdataReady(true);
@@ -117,7 +117,7 @@ const Menu = () => {
           name: categorietoadd,
         },
         {
-          headers: { restaurantid: "6218f6174af0250cad788d42" },
+          headers: { restaurantid: localStorage.getItem("restaurant_id") },
         }
       )
       .then((res) => {
