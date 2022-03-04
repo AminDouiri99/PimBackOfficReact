@@ -3,6 +3,7 @@ import { Input } from "../Login/LoginElements";
 import axios from "axios";
 import { BaseUrl } from "../../helpers/base_url";
 import Table from "../../components/table/Table";
+import { useHistory } from "react-router-dom";
 
 const Menu = () => {
   const [openAddCategorie, setopenAddCategorie] = useState(false);
@@ -15,6 +16,15 @@ const Menu = () => {
   const [openMealDetail, setopenMealDetail] = useState(false);
   const [openIngredientLis, setopenIngredientLis] = useState(false);
   const [ingrediantList, setingrediantList] = useState([]);
+  const [openaddMeal, setopenaddMeal] = useState(false);
+  const [mealtoAdd, setmealtoAdd] = useState({
+    name: "",
+    price: 0,
+    discount: 0,
+    duration: 0,
+    hotMeal: false,
+    description: "",
+  });
   const [meal, setmeal] = useState({
     name: "",
     price: 0,
@@ -91,10 +101,18 @@ const Menu = () => {
       </td>
     </tr>
   );
-
+  const history = useHistory();
+  if (localStorage.getItem("auth") != "true") {
+    //check condition
+    history.push("/login");
+  }
   React.useEffect(async () => {
     await axios
-      .get(BaseUrl + "/menu/getbyrestaurant/"+localStorage.getItem("restaurant_id"))
+      .get(
+        BaseUrl +
+          "/menu/getbyrestaurant/" +
+          localStorage.getItem("restaurant_id")
+      )
       .then((response) => {
         setlistCategories(response.data["categories"]);
         setdataReady(true);
@@ -105,6 +123,12 @@ const Menu = () => {
   }, []);
   const doOpenAddCategorie = () => {
     setopenAddCategorie(true);
+  };
+  const doCloseAddMeal = () => {
+    setopenaddMeal(false);
+  };
+  const doOpenAddMeal = () => {
+    setopenaddMeal(true);
   };
   const doCloseopenAddCategorie = () => {
     setopenAddCategorie(false);
@@ -126,12 +150,41 @@ const Menu = () => {
           doCloseopenAddCategorie();
           setcategorietoadd("");
           setdataReady(false);
+          setcategorieTitle(res.data["name"]);
+          setmeal(res.data);
+          setopenEdit(true);
           setdataReady(true);
         }
         console.log(res);
       });
   };
-
+  const closedEditMeal = () => {
+    setopenMealDetail(false);
+  };
+  const DoaddMeal = () => {
+    axios
+      .post(
+        BaseUrl + "/meal/create",
+        {
+          name: mealtoAdd.name,
+        },
+        {
+          headers: {
+            restaurantid: localStorage.getItem("restaurant_id"),
+            categoryname: categorieTitle,
+          },
+        }
+      )
+      .then(async (res) => {
+        if (res.status == 201) {
+          doCloseAddMeal();
+          setmealtoAdd({});
+          setopenEdit(false);
+          await setlistMeal((listMeal) => [...listMeal, res.data]);
+          setopenEdit(true);
+        }
+      });
+  };
   return (
     <div>
       <h2 className="page-header">Menu</h2>
@@ -200,7 +253,6 @@ const Menu = () => {
               <div className="card__body">
                 <div className="row">
                   <div className="col-4">
-                    <h3>Meal Detail </h3>
                     <h4>Meal name : </h4>
                     <p>{meal.name}</p>
                     <h4>Meal description : </h4>
@@ -213,24 +265,44 @@ const Menu = () => {
                     <p>{meal.discount} %</p>
                   </div>
                   <div className="col-8">
-                    <button
-                      onClick={doopeningrediantList}
-                      className="button col-9"
-                    >
-                      toggle ingrediants
-                    </button>
+                    <div className="row">
+                      <div className="col-8">
+                        {" "}
+                        <button
+                          onClick={doopeningrediantList}
+                          className="button col-8"
+                        >
+                          toggle ingrediants
+                        </button>
+                      </div>
+                      <div className="col-4">
+                        <button
+                          className="button col-8"
+                          onClick={() => closedEditMeal()}
+                        >
+                          close
+                        </button>
+                      </div>
+                    </div>
+
                     {openIngredientLis ? (
-                      <Table
-                        limit="10"
-                        headData={ingrediantTableHead}
-                        renderHead={(item, index) =>
-                          renderIngrediantHead(item, index)
-                        }
-                        bodyData={ingrediantList}
-                        renderBody={(item, index) =>
-                          renderIngrediantBody(item, index)
-                        }
-                      />
+                      <div>
+                        <br />{" "}
+                        <button className="button col-5">
+                          add ingrediants
+                        </button>
+                        <Table
+                          limit="10"
+                          headData={ingrediantTableHead}
+                          renderHead={(item, index) =>
+                            renderIngrediantHead(item, index)
+                          }
+                          bodyData={ingrediantList}
+                          renderBody={(item, index) =>
+                            renderIngrediantBody(item, index)
+                          }
+                        />
+                      </div>
                     ) : (
                       <div></div>
                     )}
@@ -246,14 +318,120 @@ const Menu = () => {
               <div className="card__body">
                 <h3>{categorieTitle}</h3>
                 <br></br>
-                <h4>Meals list :</h4>
-                <Table
-                  limit="10"
-                  headData={mealTableHead}
-                  renderHead={(item, index) => renderHead(item, index)}
-                  bodyData={listMeal}
-                  renderBody={(item, index) => renderMealBody(item, index)}
-                />
+                <div className="row">
+                  <div className="col-6">
+                    <h4>Meals list :</h4>
+                  </div>
+
+                  <div className="col-6">
+                    <button className="button col-6" onClick={doOpenAddMeal}>
+                      Add Meal
+                    </button>
+                  </div>
+                </div>
+                {openaddMeal ? (
+                  <div className="col-12">
+                    <br />
+
+                    <label>Meal name</label>
+                    <br />
+                    <br />
+                    <Input
+                      type="text"
+                      placeholder="Meal name"
+                      value={mealtoAdd["name"]}
+                      onChange={(e) => setmealtoAdd({ name: e.target.value })}
+                    />
+                    <br />
+
+                    <label>Meal description</label>
+                    <br />
+                    <br />
+                    <Input
+                      type="text"
+                      placeholder="Meal description"
+                      value={mealtoAdd.description}
+                      onChange={(e) =>
+                        setmealtoAdd({ description: e.target.value })
+                      }
+                    />
+
+                    <label>
+                      <br />
+
+                      <label>Meal price</label>
+                      <br />
+                      <br />
+                      <Input
+                        type="number"
+                        placeholder="Meal price"
+                        value={mealtoAdd.price}
+                        onChange={(e) =>
+                          setmealtoAdd({ price: e.target.value })
+                        }
+                      />
+                    </label>
+                    <br />
+
+                    <label>Meal duration</label>
+                    <br />
+                    <br />
+
+                    <Input
+                      type="number"
+                      placeholder="Meal duration"
+                      value={mealtoAdd.duration}
+                      onChange={(e) =>
+                        setmealtoAdd({ duration: e.target.value })
+                      }
+                    />
+                    <br />
+
+                    <label>Meal discount</label>
+                    <br />
+                    <br />
+
+                    <Input
+                      type="number"
+                      placeholder="Meal discount"
+                      value={mealtoAdd.discount}
+                      onChange={(e) =>
+                        setmealtoAdd({ discount: e.target.value })
+                      }
+                    />
+                    <div className="row">
+                      <div className="col-3">
+                        {" "}
+                        <button className="button col-12" onClick={DoaddMeal}>
+                          submit
+                        </button>
+                      </div>
+                      <div className="col-3">
+                        <button
+                          className="button col-12"
+                          onClick={doCloseAddMeal}
+                        >
+                          cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+
+                <br />
+                {dataReady ? (
+                  <Table
+                    limit="10"
+                    headData={mealTableHead}
+                    renderHead={(item, index) => renderHead(item, index)}
+                    bodyData={listMeal}
+                    renderBody={(item, index) => renderMealBody(item, index)}
+                  />
+                ) : (
+                  <div></div>
+                )}
               </div>
             </div>
           ) : (
