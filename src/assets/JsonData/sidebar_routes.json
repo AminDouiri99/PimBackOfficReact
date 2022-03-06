@@ -35,8 +35,8 @@
         "icon": "bx bx-gift"
     },
     {
-        "display_name": "inventory",
-        "route": "/inventory",
+        "display_name": "Restaurant",
+        "route": "/resto",
         "icon": "bx bx-store-alt"
     },
     {
