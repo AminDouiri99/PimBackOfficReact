@@ -1,5 +1,4 @@
 import React from "react";
-import notifsound from "../../assets/notif.mp3";
 
 import axios from "axios";
 import { BaseUrl } from "../../helpers/base_url";
