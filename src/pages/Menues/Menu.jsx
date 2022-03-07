@@ -17,6 +17,18 @@ const Menu = () => {
   const [openIngredientLis, setopenIngredientLis] = useState(false);
   const [ingrediantList, setingrediantList] = useState([]);
   const [openaddMeal, setopenaddMeal] = useState(false);
+  const [selectedFile, setSelectedFile] = React.useState(null);
+  const [selectedFileMeal, setSelectedFileMeal] = React.useState(null);
+  const handleFileSelectMeal = (event) => {
+    setSelectedFileMeal(event.target.files[0]);
+  };
+  const handleFileSelect = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+  const [erroraddingrediant, seterroraddingrediant] = useState(false);
+  const [ingrediantToNewMeal, setingrediantToNewMeal] = useState();
+  const [addIngrediantToExist, setaddIngrediantToExist] = useState(false);
+  const [ingrediantlistNew, setingrediantlistNew] = useState([]);
   const [mealtoAdd, setmealtoAdd] = useState({
     name: "",
     price: 0,
@@ -36,9 +48,9 @@ const Menu = () => {
   const doopeningrediantList = () => {
     setopenIngredientLis(!openIngredientLis);
   };
-  const customerTableHead = ["", "name", ""];
-  const mealTableHead = ["", "name", "Description"];
-  const ingrediantTableHead = ["name"];
+  const customerTableHead = ["", "name", "Edit"];
+  const mealTableHead = ["", "name", "detail", "delete"];
+  const ingrediantTableHead = ["name", "delete"];
 
   const renderHead = (item, index) => <th key={index}>{item}</th>;
   const renderIngrediantHead = (item, index) => (
@@ -50,8 +62,9 @@ const Menu = () => {
   const openEditCatfore = async (categorie) => {
     setopenEdit(false);
     setopenMealDetail(false);
-
-    await setlistMeal(categorie.meals);
+    if (categorie.meals != undefined) {
+      await setlistMeal(categorie.meals);
+    }
     setcategorieTitle(categorie.name);
     setopenEdit(true);
   };
@@ -68,7 +81,7 @@ const Menu = () => {
   );
   const opedEditMeal = async (onemeal) => {
     setopenMealDetail(false);
-    await setingrediantList(onemeal.ingrediants[0]);
+    await setingrediantList(onemeal.ingrediants);
     setmeal({
       name: onemeal.name,
       price: onemeal.price,
@@ -84,19 +97,23 @@ const Menu = () => {
       <td className=" col-1">{item}</td>
 
       <td>
-        <button className="button col-3">Edit</button>
+        <button className="button col-6">Delete</button>
       </td>
     </tr>
   );
-
+  const deleteMeal = (meal) => {};
   const renderMealBody = (item, index) => (
     <tr key={index}>
       <td></td>
       <td>{item.name}</td>
-      <td>{item.description}</td>
       <td>
         <button className="button col-10" onClick={() => opedEditMeal(item)}>
           Detail
+        </button>
+      </td>
+      <td>
+        <button className="button col-10" onClick={() => deleteMeal(item)}>
+          delete
         </button>
       </td>
     </tr>
@@ -134,16 +151,13 @@ const Menu = () => {
     setopenAddCategorie(false);
   };
   const addCategorie = () => {
+    const formData = new FormData();
+    formData.append("image", selectedFile);
+    formData.append("name", categorietoadd);
     axios
-      .post(
-        BaseUrl + "/categories/createwithoutMeals",
-        {
-          name: categorietoadd,
-        },
-        {
-          headers: { restaurantid: localStorage.getItem("restaurant_id") },
-        }
-      )
+      .post(BaseUrl + "/categories/createwithoutMeals", formData, {
+        headers: { restaurantid: localStorage.getItem("restaurant_id") },
+      })
       .then((res) => {
         if (res.status == 201) {
           listCategories.push({ name: res.data["name"] });
@@ -155,35 +169,55 @@ const Menu = () => {
           setopenEdit(true);
           setdataReady(true);
         }
-        console.log(res);
       });
   };
   const closedEditMeal = () => {
     setopenMealDetail(false);
   };
+  const addIngrediantToNewMeal = async () => {
+    await setingrediantlistNew((prev) => [...prev, ingrediantToNewMeal]);
+    setopenaddMeal(false);
+    setingrediantToNewMeal("");
+    setopenaddMeal(true);
+  };
   const DoaddMeal = () => {
-    axios
-      .post(
-        BaseUrl + "/meal/create",
-        {
-          name: mealtoAdd.name,
-        },
-        {
+    if (ingrediantlistNew.length > 0) {
+      const formData = new FormData();
+      formData.append("image", selectedFileMeal);
+      formData.append("price", mealtoAdd.price);
+      formData.append("discount", mealtoAdd.discount);
+      formData.append("duration", mealtoAdd.duration);
+      formData.append("name", mealtoAdd.name);
+      formData.append("hotMeal", false);
+      formData.append("description", mealtoAdd.description);
+      ingrediantlistNew.forEach((e) => {
+        formData.append("ingrediants", e);
+      });
+
+      console.log(ingrediantlistNew);
+      axios
+        .post(BaseUrl + "/meal/create", formData, {
           headers: {
             restaurantid: localStorage.getItem("restaurant_id"),
             categoryname: categorieTitle,
           },
-        }
-      )
-      .then(async (res) => {
-        if (res.status == 201) {
-          doCloseAddMeal();
-          setmealtoAdd({});
-          setopenEdit(false);
-          await setlistMeal((listMeal) => [...listMeal, res.data]);
-          setopenEdit(true);
-        }
-      });
+        })
+        .then(async (res) => {
+          if (res.status == 201) {
+            doCloseAddMeal();
+            setmealtoAdd({});
+            setopenEdit(false);
+            setingrediantlistNew([]);
+            await setlistMeal((listMeal) => [...listMeal, res.data]);
+            setopenEdit(true);
+          }
+        });
+    } else {
+      seterroraddingrediant(true);
+    }
+  };
+  const openAddIngreDiantsToExistant = () => {
+    setaddIngrediantToExist(true);
   };
   return (
     <div>
@@ -206,6 +240,16 @@ const Menu = () => {
                 value={categorietoadd}
                 onChange={(e) => setcategorietoadd(e.target.value)}
               />
+              <div className="row">
+                <label className="col-6">Categorie Image</label>
+              </div>
+              <br></br>
+              <input
+                className="col-6"
+                type="file"
+                onChange={handleFileSelect}
+              ></input>
+
               <div className="row">
                 <div className="col-3">
                   {" "}
@@ -288,9 +332,24 @@ const Menu = () => {
                     {openIngredientLis ? (
                       <div>
                         <br />{" "}
-                        <button className="button col-5">
+                        <button
+                          className="button col-5"
+                          onClick={openAddIngreDiantsToExistant}
+                        >
                           add ingrediants
                         </button>
+                        {addIngrediantToExist ? (
+                          <div>
+                            <br />
+                            <br />
+                            <Input type="text" placeholder="Ingrediant" />
+                            <button className="button col-5">submit </button>
+                            <br />
+                            <br />
+                          </div>
+                        ) : (
+                          <div></div>
+                        )}
                         <Table
                           limit="10"
                           headData={ingrediantTableHead}
@@ -322,83 +381,164 @@ const Menu = () => {
                   <div className="col-6">
                     <h4>Meals list :</h4>
                   </div>
-
                   <div className="col-6">
-                    <button className="button col-6" onClick={doOpenAddMeal}>
-                      Add Meal
-                    </button>
+                    <div className="row">
+                      <button className="button col-5" onClick={doOpenAddMeal}>
+                        Add Meal
+                      </button>
+                      <div className="col-1"></div>
+                      <button className="button col-4">Delete</button>
+                    </div>
                   </div>
                 </div>
                 {openaddMeal ? (
                   <div className="col-12">
-                    <br />
+                    <div className="row">
+                      <div className="col-6">
+                        <br />
 
-                    <label>Meal name</label>
-                    <br />
-                    <br />
-                    <Input
-                      type="text"
-                      placeholder="Meal name"
-                      value={mealtoAdd["name"]}
-                      onChange={(e) => setmealtoAdd({ name: e.target.value })}
-                    />
-                    <br />
+                        <label>Meal name</label>
+                        <br />
+                        <br />
+                        <Input
+                          type="text"
+                          placeholder="Meal name"
+                          value={mealtoAdd.name}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: e.target.value,
+                            }))
+                          }
+                        />
+                        <br />
 
-                    <label>Meal description</label>
-                    <br />
-                    <br />
-                    <Input
-                      type="text"
-                      placeholder="Meal description"
-                      value={mealtoAdd.description}
-                      onChange={(e) =>
-                        setmealtoAdd({ description: e.target.value })
-                      }
-                    />
+                        <label>Meal description</label>
+                        <br />
+                        <br />
+                        <Input
+                          type="text"
+                          placeholder="Meal description"
+                          value={mealtoAdd.description}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: e.target.value,
+                            }))
+                          }
+                        />
 
-                    <label>
-                      <br />
+                        <label>
+                          <br />
 
-                      <label>Meal price</label>
-                      <br />
-                      <br />
-                      <Input
-                        type="number"
-                        placeholder="Meal price"
-                        value={mealtoAdd.price}
-                        onChange={(e) =>
-                          setmealtoAdd({ price: e.target.value })
-                        }
-                      />
-                    </label>
-                    <br />
+                          <label>Meal price</label>
+                          <br />
+                          <br />
+                          <Input
+                            type="number"
+                            placeholder="Meal price"
+                            value={mealtoAdd.price}
+                            onChange={(e) =>
+                              setmealtoAdd((prev) => ({
+                                name: prev.name,
+                                description: prev.description,
+                                price: e.target.value,
+                              }))
+                            }
+                          />
+                        </label>
+                        <br />
 
-                    <label>Meal duration</label>
-                    <br />
-                    <br />
+                        <label>Meal duration</label>
+                        <br />
+                        <br />
 
-                    <Input
-                      type="number"
-                      placeholder="Meal duration"
-                      value={mealtoAdd.duration}
-                      onChange={(e) =>
-                        setmealtoAdd({ duration: e.target.value })
-                      }
-                    />
-                    <br />
+                        <Input
+                          type="number"
+                          placeholder="Meal duration"
+                          value={mealtoAdd.duration}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: prev.description,
+                              price: prev.price,
+                              duration: e.target.value,
+                            }))
+                          }
+                        />
+                        <br />
 
-                    <label>Meal discount</label>
-                    <br />
-                    <br />
+                        <label>Meal discount</label>
+                        <br />
+                        <br />
 
-                    <Input
-                      type="number"
-                      placeholder="Meal discount"
-                      value={mealtoAdd.discount}
-                      onChange={(e) =>
-                        setmealtoAdd({ discount: e.target.value })
-                      }
-                    />
+                        <Input
+                          type="number"
+                          placeholder="Meal discount"
+                          value={mealtoAdd.discount}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: prev.description,
+                              price: prev.price,
+                              duration: prev.duration,
+                              discount: e.target.value,
+                            }))
+                          }
+                        />
+
+                        <br></br>
+                        <div className="row">
+                          <input
+                            className="col-6"
+                            type="file"
+                            onChange={handleFileSelectMeal}
+                          ></input>
+                        </div>
+                        {erroraddingrediant ? (
+                          <p className="error">
+                            You should at least add one ingrediant
+                          </p>
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
+                      <div className="col-6">
+                        <br />
+                        <h3>Ingrediants</h3>
+                        <br />
+                        <Input
+                          type="text"
+                          placeholder="Ingrediant"
+                          value={ingrediantToNewMeal}
+                          onChange={(e) =>
+                            setingrediantToNewMeal(e.target.value)
+                          }
+                        />
+                        <button
+                          className="button col-8"
+                          onClick={addIngrediantToNewMeal}
+                        >
+                          Add Ingrediants
+                        </button>
+                        <br />
+                        <br />
+
+                        <Table
+                          limit="10"
+                          headData={ingrediantTableHead}
+                          renderHead={(item, index) =>
+                            renderIngrediantHead(item, index)
+                          }
+                          bodyData={ingrediantlistNew}
+                          renderBody={(item, index) =>
+                            renderIngrediantBody(item, index)
+                          }
+                        />
+                      </div>
+                      <br></br>
+                    </div>
+                    <br></br>
+
                     <div className="row">
                       <div className="col-3">
                         {" "}

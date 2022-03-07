@@ -25,16 +25,15 @@ const Orders = () => {
       <td className=" col-2">{item.meals.length}</td>
     </tr>
   );
+  const getmealbyId = (id) => {};
   React.useEffect(async () => {
     var socket = socketIOClient(SERVER);
-    socket.on("newcommand", (command) => {
-      if (command.restaurant == localStorage.getItem("restaurant_id")) {
-        console.log(command);
+    socket.on(
+      "newcommand" + localStorage.getItem("restaurant_id"),
+      (command) => {
         setnewOrdersList((newOrdersList) => [...newOrdersList, command]);
-        var audio = new Audio(notifsound);
-        audio.play();
       }
-    });
+    );
 
     await axios
       .get(
@@ -67,7 +66,9 @@ const Orders = () => {
         <br />
 
         <h4>Meal List :</h4>
-
+        {item.meals.map((item) => (
+          <p>{item.name}</p>
+        ))}
         <br />
 
         <h4>Price :</h4>
@@ -99,10 +100,9 @@ const Orders = () => {
               <br />
 
               <h4>Meal List :</h4>
-
-              <p>Makloub </p>
-              <p>Makloub </p>
-              <p>Makloub </p>
+              {item.meals.sort().map((meal) => (
+                <p>{meal.name} </p>
+              ))}
               <br />
 
               <h4>Price :</h4>
