@@ -78,6 +78,7 @@ button {
 ul {
   list-style-type: none;
 }
+
 .form {
   margin: 0 auto;
   width: 100%;
@@ -147,6 +148,9 @@ input:focus {
 .red-color {
   background-color: var(--main-color-red);
   color: #fff;
+}
+.error {
+  color: red;
 }
 
 .cyan-color {
