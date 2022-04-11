@@ -1,25 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import reportWebVitals from './reportWebVitals'
+import React from "react";
+import ReactDOM from "react-dom";
+import reportWebVitals from "./reportWebVitals";
 
-import { createStore } from 'redux'
+import { createStore } from "redux";
 
-import { Provider } from 'react-redux'
+import { Provider } from "react-redux";
 
-import rootReducer from './redux/reducers'
+import rootReducer from "./redux/reducers";
 
-import './assets/boxicons-2.0.7/css/boxicons.min.css'
-import './assets/css/grid.css'
-import './assets/css/theme.css'
-import './assets/css/index.css'
+import "./assets/boxicons-2.0.7/css/boxicons.min.css";
+import "./assets/css/grid.css";
+import "./assets/css/theme.css";
+import "./assets/css/index.css";
 
-import Layout from './components/layout/Layout'
+import Layout from "./components/layout/Layout";
+import { Web3ReactProvider } from "@web3-react/core";
+import { Web3Provider } from "@ethersproject/providers";
 
-const store = createStore(
-  rootReducer
-)
+function getLibrary(provider) {
+  return new Web3Provider(provider);
+}
+const store = createStore(rootReducer);
 
-document.title = 'LEDY Admin'
+document.title = "LEDY Admin";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -27,7 +30,7 @@ ReactDOM.render(
       <Layout />
     </React.StrictMode>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
