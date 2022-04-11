@@ -1,4 +1,5 @@
 import React from "react";
+import Badge from "../../components/badge/Badge";
 
 import axios from "axios";
 import { BaseUrl } from "../../helpers/base_url";
@@ -11,7 +12,12 @@ const Orders = () => {
   const [listOrder, setlistOrder] = useState([]);
   const [dataReady, setdataReady] = useState(false);
   const [newOrdersList, setnewOrdersList] = useState([]);
-  const customerTableHead = ["date", "note", "price", "meal number", ""];
+  const customerTableHead = ["date", "note", "price", "meal number", "Etat"];
+
+  const orderStatus = {
+    "non confirmer": "warning",
+    Completed: "success",
+  };
   const renderHead = (item, index) => <th key={index}>{item}</th>;
   const renderOrderBody = (item, index) => (
     <tr key={index}>
@@ -22,6 +28,9 @@ const Orders = () => {
       <td className=" col-2">{item.price}</td>
 
       <td className=" col-2">{item.meals.length}</td>
+      <td>
+        <Badge type={orderStatus[item.etat]} content={item.etat} />
+      </td>
     </tr>
   );
   const getmealbyId = (id) => {};

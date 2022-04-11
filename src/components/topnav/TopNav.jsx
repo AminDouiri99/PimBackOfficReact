@@ -103,11 +103,11 @@ const Topnav = () => {
               <Dropdown
                 icon="bx bx-bell"
                 badge={notifNumber}
-                contentData={listNotif}
+                contentData={listNotif.slice(0, 5)}
                 renderItems={(item, index) =>
                   renderNotificationItem(item, index)
                 }
-                renderFooter={() => <Link to="/">View All</Link>}
+                renderFooter={() => <Link to="/orders">View All</Link>}
               />
             </div>
           ) : (

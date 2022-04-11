@@ -31,7 +31,6 @@ const Resto = () => {
     await setrestoData(restaurant);
     setopenEdit(true);
   };
-
   const UpdateRestau = async () => {
     data.append("image", imgUpdate);
     data.append("name", restoDataEdit.name);
@@ -77,7 +76,6 @@ const Resto = () => {
     console.log("aaa");
     setopenEdit(false);
   };
-
   return (
     <div>
       {dataReady ? (
