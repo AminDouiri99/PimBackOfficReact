@@ -24,7 +24,7 @@ const Routes = () => {
       <Route
         path="/marketplace"
         component={() => {
-          window.location.href = "http://localhost:3005";
+          window.location.href = "http://172.17.3.219:3005";
           return null;
         }}
       />

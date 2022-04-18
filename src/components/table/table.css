@@ -6,6 +6,7 @@ table {
     width: 100%;
     min-width: 400px;
     border-spacing: 0;
+    table-layout: fixed;
 }
 
 thead {
@@ -20,10 +21,12 @@ th,
 td {
     text-transform: capitalize;
     padding: 15px 10px;
+    text-align: center; 
+    vertical-align: middle;
 }
 
 tbody > tr:hover {
-    background-color: var(--main-color);
+    /* background-color: var(--main-color); */
     color: var(--txt-white);
 }
 

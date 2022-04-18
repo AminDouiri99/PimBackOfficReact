@@ -16,7 +16,7 @@ import user_image from "../../assets/images/tuat.png";
 
 import user_menu from "../../assets/JsonData/user_menus.json";
 import { useHistory } from "react-router-dom";
-const SERVER = "http://127.0.0.1:8080";
+const SERVER = "http://127.0.0.1:4000";
 
 const Topnav = () => {
   const [listNotif, setlistNotif] = useState([]);

@@ -6,7 +6,7 @@ import { BaseUrl } from "../../helpers/base_url";
 import Table from "../../components/table/Table";
 import socketIOClient from "socket.io-client";
 import { useState } from "react";
-const SERVER = "http://127.0.0.1:8080";
+const SERVER = "http://localhost:4000";
 
 const Orders = () => {
   const [listOrder, setlistOrder] = useState([]);
@@ -40,6 +40,7 @@ const Orders = () => {
       "newcommand" + localStorage.getItem("restaurant_id"),
       (command) => {
         setnewOrdersList((newOrdersList) => [...newOrdersList, command]);
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
       }
     );
 
@@ -56,7 +57,7 @@ const Orders = () => {
       });
     return () => socket.disconnect();
   }, []);
-  const renderNewOrder = (item) => {
+ /*  const renderNewOrder = (item) => {
     <div className="card col-8">
       <div className="card__body">
         <div className="row">
@@ -83,7 +84,7 @@ const Orders = () => {
         <p>{item.price}</p>
       </div>
     </div>;
-  };
+  }; */
 
   return (
     <div className="col-12">

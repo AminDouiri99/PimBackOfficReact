@@ -448,6 +448,11 @@ button {
   outline: 0;
   color: var(--txt-color);
 }
+Button:hover{
+
+
+  background-color: var(--main-color-red);
+}
 .button {
   background: var(--main-color-red);
   border-radius: 32px;
@@ -471,9 +476,7 @@ input {
   outline: 0;
 }
 
-input:focus {
-  border: 2px solid var(--main-color);
-}
+
 
 .page-header {
   margin-bottom: 40px;
