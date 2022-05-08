@@ -226,7 +226,27 @@ const Menu = () => {
       </td>
     </tr>
   );
-  const deleteMeal = (meal) => { };
+  const deleteMeal = async (meal) => {
+
+
+    axios
+      .delete(BaseUrl + "/meal/deleteMeal", {
+        headers: {
+          restaurantid: localStorage.getItem("restaurant_id"),
+          categoryname: categorieTitle,
+          idmeal: meal._id,
+        },
+      })
+      .then(async (res) => {
+        if (res.status == 201) {
+          setopenEdit(false);
+          await setlistMeal(listMeal.filter((item) => item.id !== meal.id));
+
+          setopenEdit(true);
+
+        }
+      });
+  };
   const renderMealBody = (item, index) => (
     <tr key={index}>
       <td><ImageButton
@@ -346,7 +366,6 @@ const Menu = () => {
       ingrediantlistNew.forEach((e) => {
         formData.append("ingrediants", e);
       });
-
       console.log(ingrediantlistNew);
       axios
         .post(BaseUrl + "/meal/create", formData, {
@@ -646,272 +665,272 @@ const Menu = () => {
           {openEdit ? (
             <div className="card">
               <div className="card__body">
-              <h3>{categorieTitle}</h3>
-              <br></br>
-              <div className="row">
-                <div className="col-6">
-                  <h4>Meals list :</h4>
+                <h3>{categorieTitle}</h3>
+                <br></br>
+                <div className="row">
+                  <div className="col-6">
+                    <h4>Meals list :</h4>
+                  </div>
+                  <div className="col-6">
+
+
+                    <Button sx={{
+                      "border-radius": "32px",
+                      "width": "auto",
+                      "background": "#f44749"
+                    }}
+                      variant="contained"
+                      onClick={doOpenAddMeal}
+                      color="error"
+                      startIcon={<AddCircleIcon />}>
+                      Add Meal
+                    </Button>
+
+                  </div>
                 </div>
-                <div className="col-6">
+                {openaddMeal ? (
+                  <div className="col-12">
+                    <div className="row">
+                      <div className="col-6">
+                        <br />
 
 
-                  <Button sx={{
-                    "border-radius": "32px",
-                    "width": "auto",
-                    "background": "#f44749"
-                  }}
-                    variant="contained"
-                    onClick={doOpenAddMeal}
-                    color="error"
-                    startIcon={<AddCircleIcon />}>
-                    Add Meal
-                  </Button>
+                        <TextField
+                          placeholder="Meal name"
+                          value={mealtoAdd.name}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: e.target.value,
+                            }))
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Meal name" variant="outlined" />
 
-                </div>
-              </div>
-              {openaddMeal ? (
-                <div className="col-12">
-                  <div className="row">
-                    <div className="col-6">
-                      <br />
+                        <br /><br />
+                        <TextField
+                          placeholder="Meal description"
+                          value={mealtoAdd.description}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: e.target.value,
+                            }))
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Meal description" variant="outlined" />
+                        <br></br><br></br>
+                        <TextField
+                          placeholder="Meal price"
+                          value={mealtoAdd.price}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: prev.description,
+                              price: e.target.value,
+                            }))
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Meal price" variant="outlined" />
 
+                        <br /><br></br>
+                        <TextField
+                          placeholder="Meal duration"
+                          value={mealtoAdd.duration}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: prev.description,
+                              price: prev.price,
+                              duration: e.target.value,
+                            }))
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Meal duration" variant="outlined" />
 
-                      <TextField
-                        placeholder="Meal name"
-                        value={mealtoAdd.name}
-                        onChange={(e) =>
-                          setmealtoAdd((prev) => ({
-                            name: e.target.value,
-                          }))
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Meal name" variant="outlined" />
-
-                      <br /><br />
-                      <TextField
-                        placeholder="Meal description"
-                        value={mealtoAdd.description}
-                        onChange={(e) =>
-                          setmealtoAdd((prev) => ({
-                            name: prev.name,
-                            description: e.target.value,
-                          }))
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Meal description" variant="outlined" />
-                      <br></br><br></br>
-                      <TextField
-                        placeholder="Meal price"
-                        value={mealtoAdd.price}
-                        onChange={(e) =>
-                          setmealtoAdd((prev) => ({
-                            name: prev.name,
-                            description: prev.description,
-                            price: e.target.value,
-                          }))
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Meal price" variant="outlined" />
-
-                      <br /><br></br>
-                      <TextField
-                        placeholder="Meal duration"
-                        value={mealtoAdd.duration}
-                        onChange={(e) =>
-                          setmealtoAdd((prev) => ({
-                            name: prev.name,
-                            description: prev.description,
-                            price: prev.price,
-                            duration: e.target.value,
-                          }))
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Meal duration" variant="outlined" />
-
-                      <br /><br></br>
-                      <TextField
-                        placeholder="Meal discount"
-                        value={mealtoAdd.discount}
-                        onChange={(e) =>
-                          setmealtoAdd((prev) => ({
-                            name: prev.name,
-                            description: prev.description,
-                            price: prev.price,
-                            duration: prev.duration,
-                            discount: e.target.value,
-                          }))
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Meal discount" variant="outlined" />
+                        <br /><br></br>
+                        <TextField
+                          placeholder="Meal discount"
+                          value={mealtoAdd.discount}
+                          onChange={(e) =>
+                            setmealtoAdd((prev) => ({
+                              name: prev.name,
+                              description: prev.description,
+                              price: prev.price,
+                              duration: prev.duration,
+                              discount: e.target.value,
+                            }))
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Meal discount" variant="outlined" />
 
 
-                      <br></br><br></br>
+                        <br></br><br></br>
 
-                      <label htmlFor="contained-button-file">
-                        <InputFile accept="image/*" id="contained-button-file" type="file" onChange={handleFileSelectMeal} />
+                        <label htmlFor="contained-button-file">
+                          <InputFile accept="image/*" id="contained-button-file" type="file" onChange={handleFileSelectMeal} />
+                          <Button sx={{
+                            "border-radius": "32px",
+                            "width": "auto",
+                            "background": "#f44749"
+                          }} color="error"
+                            variant="contained" component="span">
+                            Meal Image
+                          </Button>
+                        </label>
+                        {displayMealImage ? (<Avatar
+                          alt="Remy Sharp"
+                          src={MealImageUrl}
+                          sx={{ width: 300, height: 300 }}
+                        />) : (<div></div>)}
+                        {erroraddingrediant ? (
+                          <p className="error">
+                            You should at least add one ingrediant
+                          </p>
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
+                      <div className="col-6">
+                        <br />
+                        <h3>Ingrediants</h3>
+                        <br />
+                        <TextField
+                          placeholder="Ingredient"
+                          value={ingrediantToNewMeal}
+                          onChange={(e) =>
+                            setingrediantToNewMeal(e.target.value)
+                          }
+                          sx={{
+                            input: { color: "#ffffff" }
+                          }}
+                          InputLabelProps={{
+                            sx: {
+                              // set the color of the label when not shrinked
+                              color: "#ffffff",
+                            },
+                          }}
+                          id="outlined-basic" label="Ingredient" variant="outlined" />
+
+                        <br />
+                        <br />
+
                         <Button sx={{
                           "border-radius": "32px",
                           "width": "auto",
                           "background": "#f44749"
-                        }} color="error"
-                          variant="contained" component="span">
-                          Meal Image
+                        }}
+                          variant="contained"
+                          onClick={addIngrediantToNewMeal}
+                          color="error"
+                          startIcon={<AddCircleIcon />}>
+                          add ingrediants
                         </Button>
-                      </label>
-                      {displayMealImage ? (<Avatar
-                        alt="Remy Sharp"
-                        src={MealImageUrl}
-                        sx={{ width: 300, height: 300 }}
-                      />) : (<div></div>)}
-                      {erroraddingrediant ? (
-                        <p className="error">
-                          You should at least add one ingrediant
-                        </p>
-                      ) : (
-                        <div></div>
-                      )}
-                    </div>
-                    <div className="col-6">
-                      <br />
-                      <h3>Ingrediants</h3>
-                      <br />
-                      <TextField
-                        placeholder="Ingredient"
-                        value={ingrediantToNewMeal}
-                        onChange={(e) =>
-                          setingrediantToNewMeal(e.target.value)
-                        }
-                        sx={{
-                          input: { color: "#ffffff" }
-                        }}
-                        InputLabelProps={{
-                          sx: {
-                            // set the color of the label when not shrinked
-                            color: "#ffffff",
-                          },
-                        }}
-                        id="outlined-basic" label="Ingredient" variant="outlined" />
+                        <br />
+                        <br />
 
-                      <br />
-                      <br />
-
-                      <Button sx={{
-                        "border-radius": "32px",
-                        "width": "auto",
-                        "background": "#f44749"
-                      }}
-                        variant="contained"
-                        onClick={addIngrediantToNewMeal}
-                        color="error"
-                        startIcon={<AddCircleIcon />}>
-                        add ingrediants
-                      </Button>
-                      <br />
-                      <br />
-
-                      <Table
-                        limit="10"
-                        headData={ingrediantTableHead}
-                        renderHead={(item, index) =>
-                          renderIngrediantHead(item, index)
-                        }
-                        bodyData={ingrediantlistNew}
-                        renderBody={(item, index) =>
-                          renderIngrediantBody(item, index)
-                        }
-                      />
+                        <Table
+                          limit="10"
+                          headData={ingrediantTableHead}
+                          renderHead={(item, index) =>
+                            renderIngrediantHead(item, index)
+                          }
+                          bodyData={ingrediantlistNew}
+                          renderBody={(item, index) =>
+                            renderIngrediantBody(item, index)
+                          }
+                        />
+                      </div>
+                      <br></br>
                     </div>
                     <br></br>
-                  </div>
-                  <br></br>
 
-                  <div className="row">
-                    <div className="col-3">
-                      {" "}
+                    <div className="row">
+                      <div className="col-3">
+                        {" "}
 
-                      <Button sx={{
-                        "border-radius": "32px",
-                        "width": "auto",
-                        "background": "#f44749"
-                      }} color="error" variant="contained" onClick={DoaddMeal} endIcon={<SendIcon />}>
-                        submit
-                      </Button>
+                        <Button sx={{
+                          "border-radius": "32px",
+                          "width": "auto",
+                          "background": "#f44749"
+                        }} color="error" variant="contained" onClick={DoaddMeal} endIcon={<SendIcon />}>
+                          submit
+                        </Button>
+                      </div>
+                      <div className="col-3">
+                        <Button sx={{
+                          "border-radius": "32px",
+                          "width": "auto",
+                          "background": "#f44749"
+                        }} color="error" variant="contained" onClick={doCloseAddMeal} endIcon={<CancelIcon />}>
+                          cancel
+                        </Button>
+
+                      </div>
                     </div>
-                    <div className="col-3">
-                      <Button sx={{
-                        "border-radius": "32px",
-                        "width": "auto",
-                        "background": "#f44749"
-                      }} color="error" variant="contained" onClick={doCloseAddMeal} endIcon={<CancelIcon />}>
-                        cancel
-                      </Button>
-
-                    </div>
                   </div>
-                </div>
-              ) : (
-                <div></div>
-              )}
+                ) : (
+                  <div></div>
+                )}
 
-              <br />
-              {dataReady ? (
-                <Table
-                  limit="10"
-                  headData={mealTableHead}
-                  renderHead={(item, index) => renderHead(item, index)}
-                  bodyData={listMeal}
-                  renderBody={(item, index) => renderMealBody(item, index)}
-                />
-              ) : (
-                <div></div>
-              )}
+                <br />
+                {dataReady ? (
+                  <Table
+                    limit="10"
+                    headData={mealTableHead}
+                    renderHead={(item, index) => renderHead(item, index)}
+                    bodyData={listMeal}
+                    renderBody={(item, index) => renderMealBody(item, index)}
+                  />
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
-            </div>
-        ) : (
-        <div></div>
+          ) : (
+            <div></div>
           )}
+        </div>
       </div>
-    </div>
     </div >
   );
 };

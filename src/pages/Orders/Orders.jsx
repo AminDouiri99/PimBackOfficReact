@@ -7,6 +7,7 @@ import Table from "../../components/table/Table";
 import socketIOClient from "socket.io-client";
 import { useState } from "react";
 const SERVER = "http://localhost:4000";
+//const SERVER = "https://pimnackend.herokuapp.com";
 
 const Orders = () => {
   const [listOrder, setlistOrder] = useState([]);
