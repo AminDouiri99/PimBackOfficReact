@@ -101,7 +101,24 @@ const Menu = () => {
       </td>
     </tr>
   );
-  const deleteMeal = (meal) => {};
+  const deleteMeal = async (meal) => {
+    axios
+      .delete(BaseUrl + "/meal/deleteMeal", {
+        headers: {
+          restaurantid: localStorage.getItem("restaurant_id"),
+          categoryname: categorieTitle,
+          idmeal: meal._id,
+        },
+      })
+      .then(async (res) => {
+        if (res.status == 201) {
+          setopenEdit(false);
+          await setlistMeal(listMeal.filter((item) => item.id !== meal.id));
+
+          setopenEdit(true);
+        }
+      });
+  };
   const renderMealBody = (item, index) => (
     <tr key={index}>
       <td></td>
